@@ -1,0 +1,31 @@
+pkgname=kforcesuspend
+pkgver=0.0.1
+pkgrel=1
+pkgdesc='Force KDE Plasma to suspend with sleep block inhibitors active'
+arch=(x86_64)
+url='https://github.com/qwerty12/dumb-kde-hacks/tree/master/kforcesuspend'
+depends=(dbus qt6-base patchelf plasma-workspace)
+makedepends=(cmake)
+install='kforcesuspend.install'
+source=('CMakeLists.txt' 'kforcesuspend.c' 'plthook_elf.c' 'plthook.h' 'kforcesuspend-ignore-inhibit.rules' 'kforcesuspend.hook' 'kforcesuspend.install')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+  )
+  CFLAGS="${CFLAGS} -fomit-frame-pointer -momit-leaf-frame-pointer" \
+  LDFLAGS="${LDFLAGS} -Wl,--gc-sections" \
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 kforcesuspend-ignore-inhibit.rules -t "${pkgdir}/usr/share/polkit-1/rules.d/"
+  install -Dm644 kforcesuspend.hook -t "${pkgdir}/usr/share/libalpm/hooks/"
+  install -Dm644 kforcesuspend.install -t "${pkgdir}/usr/share/libalpm/scripts/"
+  echo 'post_install' >> "${pkgdir}/usr/share/libalpm/scripts/kforcesuspend.install" # if it works with less duplication
+}

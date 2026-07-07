@@ -1,0 +1,9 @@
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = plasma-workspace
+
+[Action]
+Description = Re-adding kforcesuspend to plasmashell...
+When = PostTransaction
+Exec = /bin/sh /usr/share/libalpm/scripts/kforcesuspend.install

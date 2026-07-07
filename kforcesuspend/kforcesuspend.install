@@ -1,0 +1,78 @@
+LIB="/usr/lib/kforcesuspend/libkforcesuspend.so"
+LIB_QTDBUS=
+
+has_needed() {
+    patchelf --print-needed "$1" | grep -Fxq "$LIB"
+}
+
+get_qtdbus() {
+    patchelf --print-needed "$1" | grep -m1 -E '^libQt[0-9]+DBus\.so'
+}
+
+get_lib_qtdbus() {
+    if [ -z "$LIB_QTDBUS" ]; then
+        LIB_QTDBUS=$(get_qtdbus "$LIB") || return 1
+    fi
+
+    [ -n "$LIB_QTDBUS" ]
+}
+
+qtdbus_matches() {
+    get_lib_qtdbus || return 1
+    exe_ver="$(get_qtdbus "$1")"
+
+    if [ -z "$exe_ver" ] || [ "$LIB_QTDBUS" != "$exe_ver" ]; then
+        echo "QtDBus version mismatch:" >&2
+        echo "  $LIB: ${LIB_QTDBUS:-<none>}" >&2
+        echo "  $1: ${exe_ver:-<none>}" >&2
+        return 1
+    fi
+
+    return 0
+}
+
+needed() {
+    action="${1}"
+    target="${2}"
+    patched="/usr/lib/kforcesuspend/$(basename "$target").patched"
+
+    case "$action" in
+        add)
+            has_needed "$target" && return 0
+            qtdbus_matches "$target" || return 1
+            ;;
+        remove)
+            ! has_needed "$target" && return 0
+            ;;
+        *)
+            echo "Unknown action: $action" >&2
+            return 1
+            ;;
+    esac
+
+    patchelf "--${action}-needed" \
+        "$LIB" \
+        --output "$patched" \
+        "$target" && \
+    chown --reference="$target" "$patched" && \
+    chmod --reference="$target" "$patched" && \
+    mv -f "$patched" "$target"
+}
+
+# arg 1:  the new package version
+post_install() {
+    needed "add" "/usr/bin/plasmashell"
+    needed "add" "/usr/lib/ksmserver-logout-greeter"
+}
+
+# arg 1:  the new package version
+# arg 2:  the old package version
+post_upgrade() {
+	post_install "$1"
+}
+
+# arg 1:  the old package version
+pre_remove() {
+    needed "remove" "/usr/bin/plasmashell"
+    needed "remove" "/usr/lib/ksmserver-logout-greeter"
+}
