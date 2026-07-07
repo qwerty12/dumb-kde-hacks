@@ -6,6 +6,13 @@
 
 #define UNLIKELY(exp) __builtin_expect(!!(exp), 0)
 
+#ifdef POLKIT_CHECK_AUTH
+const char* try_get_procname();
+dbus_bool_t polkit_check_suspend_ignore_inhibit(int);
+
+static dbus_bool_t check_auth = FALSE;
+#endif
+
 static dbus_bool_t message_is_suspend_true(DBusMessage *message)
 {
     const char *sig = dbus_message_get_signature(message);
@@ -40,6 +47,11 @@ dbus_connection_send_with_reply_hook (DBusConnection     *connection,
             return dbus_connection_send_with_reply(connection, message, pending_return, timeout_milliseconds);
     }
 
+#ifdef POLKIT_CHECK_AUTH
+    if (check_auth && !polkit_check_suspend_ignore_inhibit(500))
+        return dbus_connection_send_with_reply(connection, message, pending_return, timeout_milliseconds);
+#endif
+
     DBusMessage *replacement = dbus_message_new_method_call(
         dbus_message_get_destination(message),
         dbus_message_get_path(message),
@@ -68,6 +80,12 @@ void install_hook_function()
         //printf("plthook_open error: %s\n", plthook_error());
         return;
     }
+
+#ifdef POLKIT_CHECK_AUTH
+    const char *in = try_get_procname();
+    if (in && strcmp(in, "ksmserver-logout-greeter") == 0)
+        check_auth = TRUE;
+#endif
 
     if (UNLIKELY(plthook_replace(plthook, "dbus_connection_send_with_reply", (void*)dbus_connection_send_with_reply_hook, NULL) != 0)) {
         //printf("plthook_replace error: %s\n", plthook_error());

@@ -7,14 +7,16 @@ url='https://github.com/qwerty12/dumb-kde-hacks/tree/master/kforcesuspend'
 depends=(dbus qt6-base patchelf plasma-workspace)
 makedepends=(cmake)
 install='kforcesuspend.install'
-source=('CMakeLists.txt' 'kforcesuspend.c' 'plthook_elf.c' 'plthook.h' 'kforcesuspend-ignore-inhibit.rules' 'kforcesuspend.hook' 'kforcesuspend.install')
-sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+source=('CMakeLists.txt' 'kforcesuspend.c' 'polkit_check_auth.c' 'plthook_elf.c' 'plthook.h' 'kforcesuspend-ignore-inhibit.rules' 'kforcesuspend.hook' 'kforcesuspend.install')
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
 
 build() {
   local cmake_options=(
     -B build
     -D CMAKE_BUILD_TYPE=None
     -D CMAKE_INSTALL_PREFIX=/usr
+    #-D CMAKE_VERBOSE_MAKEFILE=ON
+    #-D POLKIT_CHECK_AUTH=ON
   )
   CFLAGS="${CFLAGS} -fomit-frame-pointer -momit-leaf-frame-pointer" \
   cmake "${cmake_options[@]}"
