@@ -1,4 +1,9 @@
 LIB="/usr/lib/kforcesuspend/libkforcesuspend.so"
+TARGETS="
+/usr/bin/plasmashell
+/usr/lib/ksmserver-logout-greeter
+"
+
 LIB_QTDBUS=
 
 has_needed() {
@@ -31,7 +36,7 @@ qtdbus_matches() {
     return 0
 }
 
-needed() {
+modify_target() {
     action="${1}"
     target="${2}"
     patched="/usr/lib/kforcesuspend/$(basename "$target").patched"
@@ -59,10 +64,17 @@ needed() {
     mv -f "$patched" "$target"
 }
 
+modify_targets() {
+    action=$1
+
+    for target in $TARGETS; do
+        modify_target "$action" "$target"
+    done
+}
+
 # arg 1:  the new package version
 post_install() {
-    needed "add" "/usr/bin/plasmashell"
-    needed "add" "/usr/lib/ksmserver-logout-greeter"
+    modify_targets "add"
 }
 
 # arg 1:  the new package version
@@ -73,6 +85,5 @@ post_upgrade() {
 
 # arg 1:  the old package version
 pre_remove() {
-    needed "remove" "/usr/bin/plasmashell"
-    needed "remove" "/usr/lib/ksmserver-logout-greeter"
+    modify_targets "remove"
 }
