@@ -17,7 +17,6 @@ build() {
     -D CMAKE_INSTALL_PREFIX=/usr
   )
   CFLAGS="${CFLAGS} -fomit-frame-pointer -momit-leaf-frame-pointer" \
-  LDFLAGS="${LDFLAGS} -Wl,--gc-sections" \
   cmake "${cmake_options[@]}"
   cmake --build build
 }
