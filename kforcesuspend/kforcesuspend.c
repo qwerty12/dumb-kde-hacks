@@ -1,13 +1,18 @@
 #include <stdint.h>
 #include <string.h>
+#ifdef POLKIT_CHECK_AUTH
+#include <sys/param.h>
+#endif
 #include <dbus/dbus.h>
 
 #include "plthook.h"
 
+#ifndef UNLIKELY
 #define UNLIKELY(exp) __builtin_expect(!!(exp), 0)
+#endif
 
 #ifdef POLKIT_CHECK_AUTH
-const char* try_get_procname();
+const char* try_get_procname(void);
 dbus_bool_t polkit_check_suspend_ignore_inhibit(int);
 
 static dbus_bool_t check_auth = FALSE;
@@ -48,7 +53,7 @@ dbus_connection_send_with_reply_hook (DBusConnection     *connection,
     }
 
 #ifdef POLKIT_CHECK_AUTH
-    if (check_auth && !polkit_check_suspend_ignore_inhibit(500))
+    if (check_auth && !polkit_check_suspend_ignore_inhibit(timeout_milliseconds >= 100 ? MIN(timeout_milliseconds, 250) : 250)
         return dbus_connection_send_with_reply(connection, message, pending_return, timeout_milliseconds);
 #endif
 
@@ -72,7 +77,7 @@ dbus_connection_send_with_reply_hook (DBusConnection     *connection,
 }
 
 __attribute__((constructor))
-void install_hook_function()
+void install_hook_function(void)
 {
     plthook_t *plthook;
 

@@ -1,0 +1,14 @@
+[Window settings for JDownloader Tray Icon]
+Description=Window settings for JDownloader Tray Icon
+hastransientparentmatch=1
+layerrule=2
+skipswitcher=true
+skipswitcherrule=3
+skiptaskbar=true
+skiptaskbarrule=3
+title=JDownloader
+titlematch=1
+types=1
+wmclass=org-jdownloader-update-launcher-JDLauncher org-jdownloader-update-launcher-JDLauncher
+wmclasscomplete=true
+wmclassmatch=1

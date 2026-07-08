@@ -171,7 +171,7 @@ Cleanup:
     return ret;
 }
 
-const char* try_get_procname()
+const char* try_get_procname(void)
 {
     const char *execfn = (const char *) getauxval(AT_EXECFN);
     return execfn ? basename(execfn) : program_invocation_short_name;
