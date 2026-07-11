@@ -1,0 +1,19 @@
+{
+    "KPlugin": {
+        "Name": "kpos Window Notifier",
+        "Description": "Tells klipper-paste-on-select if the active window is Klipper's popup",
+        "Icon": "klipper",
+
+        "Authors": [
+            {
+                "Name": "qwerty12"
+            }
+        ],
+        "Id": "kpos-window-notifier",
+        "Version": "0.1",
+        "Website": "https://github.com/qwerty12/dumb-kde-hacks"
+    },
+    "X-Plasma-API": "javascript",
+    "X-Plasma-MainScript": "code/main.js",
+    "KPackageStructure": "KWin/Script"
+}

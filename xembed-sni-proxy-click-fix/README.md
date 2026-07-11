@@ -1,4 +1,4 @@
-For at least a decade, KDE's `xembed-sni-proxy` has been broken with regards to JDownloader.
+For at least a decade, KDE's `xembed-sni-proxy` has been broken with regards to JDownloader, `xembed-sni-proxy` being the component responible for showing "legacy" tray icons in a modern WM. With JDownloader, and possibly some other Java programs, `xembed-sni-proxy` does not forward click events properly, leaving you with a tray icon that is indeed there but does nothing.
 
 Konrad Materka's patch from last year, [Draft: Revert "xembed-sni-proxy: Check if descendant windows want button events"](https://invent.kde.org/plasma/plasma-workspace/-/merge_requests/5383), largely fixes this, but the PR was closed and JD's tray icon remains broken to this day with KDE.
 

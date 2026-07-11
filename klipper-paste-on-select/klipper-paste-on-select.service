@@ -1,0 +1,14 @@
+[Unit]
+Description=Paste when selecting something in Klipper
+After=plasma-workspace-wayland.target
+Requires=plasma-workspace-wayland.target
+
+[Service]
+ExecStart=%h/.local/bin/klipper-paste-on-select
+Restart=on-failure
+Type=simple
+Slice=background.slice
+TimeoutSec=5sec
+
+[Install]
+WantedBy=plasma-workspace-wayland.target
