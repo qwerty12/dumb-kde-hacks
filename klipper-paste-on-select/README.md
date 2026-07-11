@@ -33,7 +33,7 @@ kpackagetool6 --type=KWin/Script -i kpos-window-notifier/ && kcmshell6 kcm_kwin_
 3. Build the program
 
 ```shell
-go build -trimpath -gcflags="all=-C -dwarf=false" -ldflags="-s -w -buildid=" -buildvcs=false
+CGO_ENABLED=0 go build -trimpath -gcflags='all=-C -dwarf=false' -ldflags='-s -w -buildid=' -buildvcs=false
 ```
 
 4. Install the binary
