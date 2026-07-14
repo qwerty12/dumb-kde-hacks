@@ -1,0 +1,13 @@
+[Unit]
+Description=Wayland TigerVNC Server
+After=plasma-xdg-desktop-portal-kde.service
+After=plasma-core.target
+Requires=plasma-workspace-wayland.target
+
+[Service]
+ExecStart=/usr/bin/w0vncserver -DisconnectClients=false -FrameRate=30 -localhost -NeverShared -PasswordFile=%h/.vnc/passwd -RememberDisplayChoice=Never -rfbport=5150 -SecurityTypes=VncAuth -UseIPv6=off
+Restart=on-failure
+Type=exec
+
+[Install]
+WantedBy=plasma-workspace-wayland.target
