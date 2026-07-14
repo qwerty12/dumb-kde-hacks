@@ -2,6 +2,7 @@
 #include <elf.h>
 #include <link.h>
 #include <dlfcn.h>
+#include <stdlib.h>
 #include <xcb/xproto.h>
 
 static typeof(xcb_get_window_attributes_reply) *xcb_get_window_attributes_reply_orig;
@@ -68,4 +69,5 @@ void init(void)
 {
     xcb_get_window_attributes_reply_orig = dlsym(RTLD_NEXT, "xcb_get_window_attributes_reply");
     dl_iterate_phdr(find_exe_range_cb, NULL); // not-so-important safeguard
+    unsetenv("LD_PRELOAD");
 }
